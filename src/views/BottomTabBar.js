@@ -22,6 +22,8 @@ type LabelPosition =
 
 export type TabBarOptions = {
   keyboardHidesTabBar: boolean,
+  keyboardHidingAnimationDuration?: number,
+  keyboardShowingAnimationDuration?: number,
   activeTintColor?: string,
   inactiveTintColor?: string,
   activeBackgroundColor?: string,
@@ -63,6 +65,8 @@ const isIos = Platform.OS === 'ios';
 const isIOS11 = majorVersion >= 11 && isIos;
 
 const DEFAULT_MAX_TAB_ITEM_WIDTH = 125;
+const DEFAULT_KEYBOARD_HIDING_DURATION = 100;
+const DEFAULT_KEYBOARD_SHOWING_DURATION = 150;
 
 class TouchableWithoutFeedbackWrapper extends React.Component<*> {
   render() {
@@ -136,7 +140,10 @@ class TabBarBottom extends React.Component<Props, State> {
     this.setState({ keyboard: true }, () =>
       Animated.timing(this.state.visible, {
         toValue: 0,
-        duration: 150,
+        duration:
+          this.props.keyboardShowingAnimationDuration !== undefined
+            ? this.props.keyboardShowingAnimationDuration
+            : DEFAULT_KEYBOARD_SHOWING_DURATION,
         useNativeDriver: true,
       }).start()
     );
@@ -144,7 +151,10 @@ class TabBarBottom extends React.Component<Props, State> {
   _handleKeyboardHide = () =>
     Animated.timing(this.state.visible, {
       toValue: 1,
-      duration: 100,
+      duration:
+        this.props.keyboardHidingAnimationDuration !== undefined
+          ? this.props.keyboardHidingAnimationDuration
+          : DEFAULT_KEYBOARD_HIDING_DURATION,
       useNativeDriver: true,
     }).start(() => {
       this.setState({ keyboard: false });
